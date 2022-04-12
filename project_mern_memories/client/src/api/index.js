@@ -1,9 +1,75 @@
 import axios from 'axios';
 
-const url = 'http://localhost:5000/posts';
+const url = 'http://localhost:3000';
 
-export const fetchPosts = () => axios.get(url);
-export const createPost = (newPost) => axios.post(url, newPost);
-export const likePost = (id) => axios.patch(`${url}/${id}/likePost`);
-export const updatePost = (id, updatedPost) => axios.patch(`${url}/${id}`, updatedPost);
-export const deletePost = (id) => axios.delete(`${url}/${id}`);
+export class ApiClient {
+    constructor(token, logoutHandler) {
+        this.token = token;
+        this.logoutHandler = logoutHandler;
+    }
+
+    apiCall(method,url,data) {
+        return axios({
+            method,
+            url,
+            data,
+        }).catch((error) => {
+            throw error
+        })
+    }
+
+    authenticatedCall(method,url,data) {
+        return axios({
+            method,
+            url,
+            headers: {
+                authorization: this.token
+            },
+            data,
+        }).catch((error) => {
+            // NEED TO ESTABLISH LOGOUTHANDLER FUNCTIONALITY
+            /* if(error.response.status === 403){
+            //this.logoutHandler();
+         return Promise.reject()
+        } else {
+        throw error;
+        } */
+        })
+    }
+
+
+    async register(displayName, userName, password){
+        return await this.authenticatedCall("post", `${url}/register`, {displayName: displayName, userName: userName, password: password})
+    }
+    async login(userName,password){
+        return await this.authenticatedCall("post", `${url}/auth`, {userName: userName, password: password})
+    }
+
+    // uses apiCall for read-only view
+    getEvents() {
+        return this.apiCall("get", url)
+    }
+    getEventsByLocation(location) {
+        return this.apiCall("get",`${url}/location/${location}`)
+    }
+    getEventsByDate(eventDate) {
+        return this.apiCall("get", `${url}/date/${eventDate}`)
+    }
+
+    // api calls that require registration
+
+    addEvent(creator, eventName, location, description, eventDate, eventTime){
+        return this.authenticatedCall("post", `${url}/create`, { creator, eventName, location, description, eventDate, eventTime })
+    }
+
+    updateEvent(_id, creator, eventName, location, description, eventDate, eventTime){
+        return this.authenticatedCall("put", `${url}/${_id}`, { creator, eventName, location, description, eventDate, eventTime })
+    }
+
+    removeBook(_id) {
+        return this.authenticatedCall("delete", `${url}/${_id}`)
+    }
+
+
+
+}
