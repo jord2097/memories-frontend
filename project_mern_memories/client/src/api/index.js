@@ -53,20 +53,20 @@ export class ApiClient {
         return this.apiCall("get",`${url}/location/${location}`)
     }
     getEventsByDate(eventDate) {
-        return this.apiCall("get", `${url}/date/${eventDate}`)
+        return this.apiCall("get", `${url}/date/${eventDate}` )
     }
 
     // api calls that require registration
 
-    addEvent(creator, eventName, location, description, eventDate, eventTime){
-        return this.authenticatedCall("post", `${url}/create`, { creator, eventName, location, description, eventDate, eventTime })
+    addEvent(creator, eventName, location, description, eventDate, img){
+        return this.authenticatedCall("post", `${url}`, { creator, eventName, location, description, eventDate, img })
     }
 
-    updateEvent(_id, creator, eventName, location, description, eventDate, eventTime){
-        return this.authenticatedCall("put", `${url}/${_id}`, { creator, eventName, location, description, eventDate, eventTime })
+    updateEvent(_id, creator, eventName, location, description, eventDate, img){
+        return this.authenticatedCall("put", `${url}/${_id}`, { creator, eventName, location, description, eventDate, img })
     }
 
-    removeBook(_id) {
+    deleteEvent(_id) {
         return this.authenticatedCall("delete", `${url}/${_id}`)
     }
 
