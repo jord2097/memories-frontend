@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const url = 'http://localhost:3000';
+const url = 'https://server-memories.herokuapp.com';
 
 export class ApiClient {
     constructor(token, logoutHandler) {
